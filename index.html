@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>E-MoVote</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    type="text/css">
+  <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.1.3.css">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.11/ngStorage.js"></script>
+  <script type="text/javascript" src="app.js"></script>
+</head>
+
+<body ng-app="register">
+  <!--NavBar-->
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="container" ng-controller="LogoutCtrl"> <button class="navbar-toggler navbar-toggler-right border-0"
+        type="button" data-toggle="collapse" data-target="#navbar12">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbar12"> <a class="navbar-brand d-none d-md-block">
+          <b style="color: white;">E-MoVote</b>
+        </a>
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"> <a class="nav-link" href="#Home">Home</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="#Vote">Vote</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="#AboutUs">About</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="./data.html">Details</a> </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item"> <a class="btn navbar-btn ml-md-2 btn-light text-dark" ng-show="!Login"
+              data-target="#LoginModal" data-toggle="modal">Log in</a> </li>
+          <li class="nav-item"> <a class="btn navbar-btn ml-md-2 btn-light text-dark" ng-show="!Login"
+              data-target="#RegisterModal" data-toggle="modal">Register</a> </li>
+          <div class="container d-flex justify-content-center"> <a class="navbar-brand text-light" ng-show="Login">
+              <i class="fa d-inline fa-lg fa-user-o" ng-show="Login"></i>
+            </a>
+          </div>
+          <li class="nav-item"> <a class="btn nav-btn ml-md 2 btn-danger text-light" ng-show="Login"
+              ng-click="logout()">Log Out</a> </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!--Script-->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"
+    style=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"
+    style=""></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"
+    style=""></script>
+  <!--Login Modal-->
+  <div class="modal fade" id="LoginModal" role="dialog" ng-controller="loginCtrl">
+    <div class="modal-dialog modal-md text-center">
+      <div class="modal-content text-center">
+        <div class="modal-header">
+          <h4 class="modal-title">Log In</h4>
+          <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+        <div class="modal-body">
+          <form class="">
+            <div class="form-group"> <label>Email address</label> <input type="email" class="form-control"
+                placeholder="Enter email"> <br> </div>
+            <div class="form-group"> <label>Password</label> <input type="password" class="form-control"
+                placeholder="Password"> </div>
+            <br>
+            <button type="submit" class="btn btn-primary" ng-click="submit()">Log In</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Register Modal -->
+  <div class="modal fade" id="RegisterModal" role="dialog">
+    <div class="modal-dialog modal-lg text-center">
+      <div class="modal-content text-center">
+        <div class="modal-header">
+          <h4 class="modal-title">Register</h4>
+          <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+        <div class="modal-body" ng-controller="myCtrl">
+          <form class="" id="registerform" ng-model="registerform" name="registerform">
+            <div class="form-group"> Name <input type="text" ng-model="myObj.nama" class="form-control"
+                placeholder="Enter Name" name="nama" required=""> </div>
+            <div class="form-group"> Email address <input type="email" ng-model="myObj.email" class="form-control"
+                placeholder="Enter email" name="email" required=""> </div>
+            <div class="form-group"> Password <input type="password" ng-model="myObj.password" class="form-control"
+                placeholder="Password" name="password" required=""> </div>
+            <div class="form-group"> Confirm Password <input type="password" ng-model="myObj.confirmpassword"
+                class="form-control" placeholder="Confirm Password" name="password2" use-form-error="isNotSame"
+                use-error-expression="myObj.password!==myObj.confirmpassword" required=""> </div>
+            <span ng-show="register.$error.isNotSame" style="color:red" role="alert">Passwords Do Not Match!</span>
+            <div class="form-group"> Your Number <input type="text" ng-model="myObj.number" class="form-control"
+                placeholder="Enter Phone Number" name="nomor" ng-minlength="11" ng-maxlength="12" required=""> </div>
+            <!-- Alert For Number -->
+            <span ng-show="registerform.nomor.$error.minlength" style="color:red" role="alert">Nomor Anda Terlalu
+              Pendek</span>
+            <span ng-show="registerform.nomor.$error.maxlength" style="color:red" role="alert">Nomor Anda Terlalu
+              Panjang</span>
+            <!-- -->
+            <br>
+            <button type="submit"
+              ng-disabled="registerform.nama.$error.required || registerform.email.$error.required || registerform.password.$error.required || registerform.password2.$error.required || registerform.nomor.$error.required"
+              class="btn btn-success" ng-click="saveData()">Submit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- HomePage -->
+  <div class="py-5 text-center text-md-right" id="Home"
+    style="background-image: url(https://ak3.picdn.net/shutterstock/videos/3635543/thumb/1.jpg);	background-position: right bottom;	background-size: cover;	background-repeat: repeat; background-attachment: fixed;">
+    <div class="container">
+      <div class="row">
+        <div class="p-5 mx-auto mx-md-0 ml-md-auto col-10 col-md-9">
+          <h3 class="display-3" style="color:white;">E-Voting Movies</h3>
+          <p class="mb-3 lead" style="color:white;">Vote For your Favorite Movie Here, From Action to Romance<br>All The
+            Best Movie In 2018&nbsp;</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Carousel -->
+  <div class="py-2 bg-dark">
+    <div class="container">
+      <div class="row">
+        <div class="text-center mx-auto col-lg-8 col-10">
+          <br>
+          <div id="carousel1" class="carousel slide carousel-fade" data-ride="carousel" data-interval="5000">
+            <div class="carousel-inner">
+              <div class="carousel-item active"> <img class="d-block w-100" src="ReadyPlayerOne.jpeg"> </div>
+              <div class="carousel-item"> <img class="d-block w-100" src="MissionImpossible.jpg"> </div>
+              <div class="carousel-item"> <img class="d-block w-100" src="image/c/NC.jpg"> </div>
+            </div>
+            <ol class="carousel-indicators">
+              <li data-target="#carousel1" data-slide-to="0" class="active"> </li>
+              <li data-target="#carousel1" data-slide-to="1"> </li>
+              <li data-target="#carousel1" data-slide-to="2"> </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Action Vote Modal -->
+  <div class="modal fade" id="ActionModal" role="dialog">
+    <div class="modal-dialog modal-lg text-center">
+      <div class="modal-content text-center">
+        <div class="modal-header">
+          <h4 class="modal-title">Action</h4>
+          <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+        <div class="modal-body" ng-controller="ActionCtrl" ng-model"="voteaction&quot;">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-4 p-3">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/Mile22.jpg" width="150">
+                    <h1>Film 1</h1>
+                    <a class="btn btn-dark text-light" ng-show="!ActionDisable" ng-click="voteaction1()"
+                      ng-model="voteaction1" name="voteAction1">Vote</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 p-3 col-md-6">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/MissionImpossibleFallout.jpg" width="150">
+                    <h1>Film 2</h1><a class="btn btn-dark text-light" ng-show="!ActionDisable"
+                      ng-click="voteaction2()">Vote</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 p-3 col-md-6">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/TheSpyWhoDumpedMe.jpg" width="150">
+                    <h1>Film 3</h1>
+                    <a class="btn btn-dark text-light" ng-show="!ActionDisable" ng-click="voteaction3()">Vote</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <canvas id="ActionChart" width="100%" height="75px"></canvas>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Romance Vote Modal -->
+  <div class="modal fade" id="RomanceModal" role="dialog">
+    <div class="modal-dialog modal-lg text-center">
+      <div class="modal-content text-center">
+        <div class="modal-header">
+          <h4 class="modal-title">Romance</h4>
+          <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+        <div class="modal-body" ng-controller="RomanceCtrl">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-4 p-3">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/A-Star-Is-Born.jpg" width="150">
+                    <h1>Film 1</h1>
+                    <a class="btn btn-dark text-light" ng-show="!RomanceDisable" ng-click="voteromance1()">Vote</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 p-3 col-md-6">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/Forever-My-Girl.jpg" width="150">
+                    <h1>Film 2</h1>
+                    <a class="btn btn-dark text-light" ng-show="!RomanceDisable" ng-click="voteromance2()">Vote</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 p-3 col-md-6">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/Mamma-Mia.jpg" width="150">
+                    <h1>Film 3</h1>
+                    <a class="btn btn-dark text-light" ng-show="!RomanceDisable" ng-click="voteromance3()">Vote</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <canvas id="RomanceChart" width="100%" height="75px"></canvas>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Fantasy Vote Modal -->
+  <div class="modal fade" id="FantasyModal" role="dialog">
+    <div class="modal-dialog modal-lg text-center">
+      <div class="modal-content text-center">
+        <div class="modal-header">
+          <h4 class="modal-title">Fantasy</h4>
+          <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+        <div class="modal-body" ng-controller="FantasyCtrl">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-4 p-3">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/NC.png" width="150">
+                    <h1>Film 1</h1>
+                    <a class="btn btn-dark text-light" ng-show="!FantasyDisable" ng-click="votefantasy1()">Vote</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 p-3 col-md-6">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/FB.jpg" width="150">
+                    <h1>Film 2</h1>
+                    <a class="btn btn-dark text-light" ng-show="!FantasyDisable" ng-click="votefantasy2()">Vote</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 p-3 col-md-6">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/CR.jpg" width="150">
+                    <h1>Film 3</h1>
+                    <a class="btn btn-dark text-light" ng-show="!FantasyDisable" ng-click="votefantasy3()">Vote</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <canvas id="FantasyChart" width="100%" height="75px"></canvas>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Scifi Vote Modal -->
+  <div class="modal fade" id="Sci-fiModal" role="dialog">
+    <div class="modal-dialog modal-lg text-center">
+      <div class="modal-content text-center">
+        <div class="modal-header">
+          <h4 class="modal-title">Sci-fi</h4>
+          <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+        <div class="modal-body" ng-controller="ScifiCtrl">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-4 p-3">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/RPO.jpg" width="150">
+                    <h1>Film 1</h1>
+                    <a class="btn btn-dark text-light" ng-show="!ScifiDisable" ng-click="votescifi1()">Vote</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 p-3 col-md-6">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/Venom.jpg" width="150">
+                    <h1>Film 2</h1><a class="btn btn-dark text-light" ng-show="!ScifiDisable"
+                      ng-click="votescifi2()">Vote</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 p-3 col-md-6">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/BP.jpg" width="150">
+                    <h1>Film 3</h1>
+                    <a class="btn btn-dark text-light" ng-show="!ScifiDisable" ng-click="votescifi3()">Vote</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <canvas id="ScifiChart" width="100%" height="75px"></canvas>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" href="#" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Horror Vote Modal -->
+  <div class="modal fade" id="HorrorModal" role="dialog">
+    <div class="modal-dialog modal-lg text-center">
+      <div class="modal-content text-center">
+        <div class="modal-header">
+          <h4 class="modal-title">Horror</h4>
+          <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+        <div class="modal-body" ng-controller="HorrorCtrl">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-4 p-3">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/Halloween.jpg" width="150">
+                    <h1>Film 1</h1>
+                    <a class="btn btn-dark text-light" ng-show="!HorrorDisable" ng-click="votehorror1()">Vote</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 p-3 col-md-6">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/The-Nun.jpg" width="150">
+                    <h1>Film 2</h1>
+                    <a class="btn btn-dark text-light" ng-show="!HorrorDisable" ng-click="votehorror2()">Vote</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 p-3 col-md-6">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/Hereditary.jpg" width="150">
+                    <h1>Film 3</h1>
+                    <a class="btn btn-dark text-light" ng-show="!HorrorDisable" ng-click="votehorror3()">Vote</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <canvas id="HorrorChart" width="100%" height="75px"></canvas>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Thriller Vote Modal -->
+  <!-- Thriller Vote Modal -->
+  <div class="modal fade" id="ThrillerModal" role="dialog">
+    <div class="modal-dialog modal-lg text-center">
+      <div class="modal-content text-center">
+        <div class="modal-header">
+          <h4 class="modal-title">Thriller</h4>
+          <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+        <div class="modal-body" ng-controller="ThrillerCtrl">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-4 p-3">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/The-First-Purge.jpg" width="150">
+                    <h1>Film 1</h1>
+                    <a class="btn btn-dark text-light" ng-show="!ThrillerDisable" ng-click="votethriller1()">Vote</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 p-3 col-md-6">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/Truth-Or-Dare.jpg" width="150">
+                    <h1>Film 2</h1><a class="btn btn-dark text-light" ng-show="!ThrillerDisable"
+                      ng-click="votethriller2()">Vote</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 p-3 col-md-6">
+                <div class="card">
+                  <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                      src="image/Winchester.jpg" width="150">
+                    <h1>Film 3</h1>
+                    <a class="btn btn-dark text-light" ng-show="!ThrillerDisable" ng-click="votethriller3()">Vote</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <canvas id="ThrillerChart" width="100%" height="75px"></canvas>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Vote Section -->
+  <div class="py-4 text-center bg-dark" id="Vote">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 p-3">
+          <div class="card">
+            <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                src="image/Mile22.jpg" width="150">
+              <h1>Action</h1>
+              <a class="btn btn-dark text-light" data-target="#ActionModal" data-toggle="modal"
+                ng-show="Logout">Vote</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 p-3 col-md-6">
+          <div class="card">
+            <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                src="image/A-Star-Is-Born.jpg" width="150">
+              <h1>Romance</h1>
+              <a class="btn btn-dark text-light" data-target="#RomanceModal" data-toggle="modal"
+                ng-show="Logout">Vote</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 p-3 col-md-6">
+          <div class="card">
+            <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle" src="image/FB.jpg"
+                width="150">
+              <h1>Fantasy</h1>
+              <a class="btn btn-dark text-light" data-target="#FantasyModal" data-toggle="modal"
+                ng-show="Logout">Vote</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Vote Secttion 2 -->
+  <div class="py-4 text-center bg-dark">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 p-3">
+          <div class="card">
+            <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle" src="image/RPO.jpg"
+                width="150">
+              <h1>Sci-fi</h1>
+              <a class="btn btn-dark text-light" data-target="#Sci-fiModal" data-toggle="modal"
+                ng-show="Logout">Vote</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 p-3 col-md-6">
+          <div class="card">
+            <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                src="image/The-Nun.jpg" width="150">
+              <h1>Horror</h1>
+              <a class="btn btn-dark text-light" data-target="#HorrorModal" data-toggle="modal"
+                ng-show="Logout">Vote</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 p-3 col-md-6">
+          <div class="card">
+            <div class="card-body p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+                src="image/Truth-Or-Dare.jpg" width="150">
+              <h1>Thriller</h1>
+              <a class="btn btn-dark text-light" data-target="#ThrillerModal" data-toggle="modal"
+                ng-show="Logout">Vote</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- About Us -->
+  <div class="py-5 text-center text-white" id="AboutUs"
+    style="background-image: url(https://ak3.picdn.net/shutterstock/videos/3635543/thumb/1.jpg);	background-position: right bottom;	background-size: cover;	background-repeat: repeat; background-attachment: fixed;">
+    <div class="container">
+      <div class="row">
+        <div class="mx-auto col-md-12">
+          <h1 class="mb-3">Our team</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-4 col-md-6 p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+            src="image/ice bears.png" alt="Card image cap" width="200">
+          <h4> <b>Prisilia Ines</b></h4>
+          <p class="mb-0">00000018075</p>
+        </div>
+        <div class="col-lg-4 col-md-6 p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle"
+            src="image/ice bears.png" alt="Card image cap" width="200">
+          <h4> <b>Frendy Wong</b></h4>
+          <p class="mb-0">00000015312</p>
+        </div>
+        <div class="col-lg-4 p-4"> <img class="img-fluid d-block mb-3 mx-auto rounded-circle" src="image/ice bears.png"
+            width="200">
+          <h4> <b>Lulu Luthfiana</b></h4>
+          <p class="mb-0">00000018136</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
